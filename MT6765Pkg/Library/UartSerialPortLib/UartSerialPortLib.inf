@@ -1,5 +1,5 @@
 ## @file
-#  Null instance of Serial Port Library with empty functions.
+#  Experimental MT6765 UART SerialPortLib instance.
 #
 #  Copyright (c) 2006 - 2018, Intel Corporation. All rights reserved.<BR>
 #
@@ -24,7 +24,7 @@
 
 
 #
-#  VALID_ARCHITECTURES           = IA32 X64 EBC
+#  VALID_ARCHITECTURES           = AARCH64
 #
 
 [Sources]
