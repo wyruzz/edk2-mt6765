@@ -17,7 +17,8 @@
   # The DT reports 4 GiB DRAM, but reserved-memory assignments are not mapped yet.
   # Do not treat this as the final XNU/UEFI memory map.
   gArmTokenSpaceGuid.PcdSystemMemorySize|0xc0000000
-  gEmbeddedTokenSpaceGuid.PcdPrePiStackBase|0x40C00000
+  # Keep the entry stack aligned with PrePi.c: pool end minus stack size.
+  gEmbeddedTokenSpaceGuid.PcdPrePiStackBase|0x43FC0000
   gEmbeddedTokenSpaceGuid.PcdPrePiStackSize|0x00040000
   gMT6765PkgTokenSpaceGuid.PcdUefiMemPoolBase|0x40D00000
   gMT6765PkgTokenSpaceGuid.PcdUefiMemPoolSize|0x03300000
