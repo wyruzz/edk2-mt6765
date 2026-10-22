@@ -75,7 +75,12 @@
 
   FrameBufferBltLib|MT6765Pkg/Library/FrameBufferBltLib/FrameBufferBltLib.inf
 
+!if $(SM_A037F_UART_ONLY) == TRUE
+  # A03s bring-up: use the UART address captured from the device tree.
+  SerialPortLib|MT6765Pkg/Library/UartSerialPortLib/UartSerialPortLib.inf
+!else
   SerialPortLib|MT6765Pkg/Library/FrameBufferSerialPortLib/FrameBufferSerialPortLib.inf
+!endif
   PlatformBootManagerLib|MT6765Pkg/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
   MemoryInitPeiLib|MT6765Pkg/Library/MemoryInitPeiLib/PeiMemoryAllocationLib.inf
   PlatformPeiLib|MT6765Pkg/Library/PlatformPeiLib/PlatformPeiLib.inf
@@ -205,8 +210,12 @@
   # Platform Dxes
   #
   MT6765Pkg/Drivers/MT6765PkgDxe/MT6765PkgDxe.inf
+!if $(SM_A037F_UART_ONLY) != TRUE
   MT6765Pkg/Drivers/SimpleFbDxe/SimpleFbDxe.inf
+!endif
+!if $(SM_A037F_UART_ONLY) != TRUE
   MT6765Pkg/Drivers/LogoDxe/LogoDxe.inf
+!endif
 
   #
   # USB Host Support
