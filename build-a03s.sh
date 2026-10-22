@@ -15,17 +15,17 @@ GCC5_AARCH64_PREFIX="$GCC5_AARCH64_PREFIX" build -j"$JOBS" -s -n 0 \
   -a AARCH64 -t GCC5 -p MT6765Pkg/Devices/sm-a037f.dsc \
   -D SM_A037F_UART_ONLY=TRUE
 
-cat BootShim/BootShim.bin workspace/Build/SM-A037F/DEBUG_GCC5/FV/MT6765PKG_UEFI.fd \
-  > workspace/UEFI-sm-a037f.bin
-
-SIZE="$(wc -c < workspace/UEFI-sm-a037f.bin | tr -d ' ')"
+cat workspace/Build/SM-A037F/DEBUG_GCC5/FV/MT6765PKG_UEFI.fd > workspace/UEFI-sm-a037f.fd
+SIZE="$(wc -c < workspace/UEFI-sm-a037f.fd | tr -d ' ')"
 if [ "$SIZE" -gt 2097152 ]; then
-  echo "ERROR: BootShim + UEFI is $SIZE bytes; the current shim copies only 2 MiB." >&2
-  rm -f workspace/UEFI-sm-a037f.bin
+  echo "ERROR: UEFI firmware is $SIZE bytes; the current shim copies only 2 MiB." >&2
+  rm -f workspace/UEFI-sm-a037f.fd
   exit 1
 fi
 
-# BootShim copies a fixed 2 MiB payload window, so pad the output explicitly.
-truncate -s 2097152 workspace/UEFI-sm-a037f.bin
-echo "Built workspace/UEFI-sm-a037f.bin (2 MiB raw payload; NOT an Android boot image)."
+# BootShim copies 2 MiB starting at its _Payload label, i.e. the FD immediately
+# following BootShim.bin. Pad the FD itself before concatenating the container.
+truncate -s 2097152 workspace/UEFI-sm-a037f.fd
+cat BootShim/BootShim.bin workspace/UEFI-sm-a037f.fd > workspace/UEFI-sm-a037f.bin
+echo "Built workspace/UEFI-sm-a037f.bin (BootShim + 2 MiB FD; NOT an Android boot image)."
 echo "No phone flashing or boot-image packaging was performed."
