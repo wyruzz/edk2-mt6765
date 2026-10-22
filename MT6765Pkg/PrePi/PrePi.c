@@ -24,19 +24,7 @@
 
 VOID EFIAPI ProcessLibraryConstructorList(VOID);
 
-char* uart_reg0 = (char*)0x11002000;
-char* uart_reg1 = (char*)0x11002014;
-
-void PrintUart(char* str) {
-    char c = str[0];
-    int i = 0;
-    while(c) {
-    	while ( !((*uart_reg1) & 0x20) ) {}
-		*uart_reg0 = c;
-        c = str[++i];
-    }
-}
-
+/* UART output is provided by SerialPortLib; avoid a second unbounded MMIO path. */
 
 VOID UartInit(VOID)
 {

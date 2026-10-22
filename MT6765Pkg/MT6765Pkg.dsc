@@ -15,16 +15,8 @@
 # Defines Section - statements that will be processed to create a Makefile.
 #
 ################################################################################
-[Defines]
-  PLATFORM_NAME                  = MT6765Pkg
-  PLATFORM_GUID                  = 28f1a3bf-193a-47e3-a7b9-5a435eaab2ee
-  PLATFORM_VERSION               = 0.1
-  DSC_SPECIFICATION              = 0x00010019
-  OUTPUT_DIRECTORY               = Build/$(PLATFORM_NAME)
-  SUPPORTED_ARCHITECTURES        = AARCH64
-  BUILD_TARGETS                  = DEBUG|RELEASE
-  SKUID_IDENTIFIER               = DEFAULT
-  FLASH_DEFINITION               = MT6765Pkg/MT6765Pkg.fdf
+# Common DSC fragment: platform-specific [Defines] belong in Devices/*.dsc.
+
 
 !include MT6765Pkg/CommonDsc.dsc.inc
 
@@ -53,7 +45,6 @@
   DxeServicesLib|MdePkg/Library/DxeServicesLib/DxeServicesLib.inf
   BootLogoLib|MdeModulePkg/Library/BootLogoLib/BootLogoLib.inf
 
-  SerialPortLib|MT6765Pkg/Library/UartSerialPortLib/UartSerialPortLib.inf
   RealTimeClockLib|EmbeddedPkg/Library/VirtualRealTimeClockLib/VirtualRealTimeClockLib.inf
   TimeBaseLib|EmbeddedPkg/Library/TimeBaseLib/TimeBaseLib.inf
 
@@ -75,7 +66,12 @@
 
   FrameBufferBltLib|MT6765Pkg/Library/FrameBufferBltLib/FrameBufferBltLib.inf
 
+!if $(PLATFORM_NAME) == SMA037F
+  # A03s bring-up: use the UART address captured from the device tree.
+  SerialPortLib|MT6765Pkg/Library/UartSerialPortLib/UartSerialPortLib.inf
+!else
   SerialPortLib|MT6765Pkg/Library/FrameBufferSerialPortLib/FrameBufferSerialPortLib.inf
+!endif
   PlatformBootManagerLib|MT6765Pkg/Library/PlatformBootManagerLib/PlatformBootManagerLib.inf
   MemoryInitPeiLib|MT6765Pkg/Library/MemoryInitPeiLib/PeiMemoryAllocationLib.inf
   PlatformPeiLib|MT6765Pkg/Library/PlatformPeiLib/PlatformPeiLib.inf
@@ -205,8 +201,12 @@
   # Platform Dxes
   #
   MT6765Pkg/Drivers/MT6765PkgDxe/MT6765PkgDxe.inf
+!if $(PLATFORM_NAME) != SMA037F
   MT6765Pkg/Drivers/SimpleFbDxe/SimpleFbDxe.inf
+!endif
+!if $(PLATFORM_NAME) != SMA037F
   MT6765Pkg/Drivers/LogoDxe/LogoDxe.inf
+!endif
 
   #
   # USB Host Support

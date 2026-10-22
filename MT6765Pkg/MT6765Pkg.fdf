@@ -137,8 +137,10 @@ READ_LOCK_STATUS   = TRUE
   # Platform Dxes
   #
   INF MT6765Pkg/Drivers/MT6765PkgDxe/MT6765PkgDxe.inf
+!if $(PLATFORM_NAME) != SMA037F
   INF MT6765Pkg/Drivers/SimpleFbDxe/SimpleFbDxe.inf
   INF MT6765Pkg/Drivers/LogoDxe/LogoDxe.inf
+!endif
 
   #
   # USB Host Support
