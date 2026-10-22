@@ -1,0 +1,53 @@
+name: SM-A037F EDK II build
+
+on:
+  pull_request:
+  push:
+    branches:
+      - sm-a037f-uart-first
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-sm-a037f:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout platform port
+        uses: actions/checkout@v4
+        with:
+          path: edk2-mt6765
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential uuid-dev acpica-tools nasm python3 python3-pip gcc-aarch64-linux-gnu
+
+      - name: Checkout EDK II
+        uses: actions/checkout@v4
+        with:
+          repository: tianocore/edk2
+          ref: edk2-stable202302
+          path: edk2
+          submodules: recursive
+
+      - name: Checkout edk2-platforms
+        uses: actions/checkout@v4
+        with:
+          repository: tianocore/edk2-platforms
+          path: edk2-platforms
+
+      - name: Build BaseTools
+        working-directory: edk2
+        run: make -C BaseTools
+
+      - name: Build SM-A037F firmware
+        working-directory: edk2-mt6765
+        env:
+          PACKAGES_PATH: ${{ github.workspace }}/edk2:${{ github.workspace }}/edk2-platforms:${{ github.workspace }}/edk2-mt6765
+          WORKSPACE: ${{ github.workspace }}/workspace
+          GCC5_AARCH64_PREFIX: aarch64-linux-gnu-
+        run: |
+          source "${{ github.workspace }}/edk2/edksetup.sh"
+          build -j"$(nproc)" -s -n 0 -a AARCH64 -t GCC5 -p MT6765Pkg/Devices/sm-a037f.dsc
