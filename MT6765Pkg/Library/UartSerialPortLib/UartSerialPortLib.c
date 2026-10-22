@@ -116,10 +116,26 @@ UINTN
 EFIAPI
 SerialPortRead (
   OUT UINT8     *Buffer,
-  IN  UINTN     NumberOfBytes
-)
+  IN  UINTN      NumberOfBytes
+  )
 {
-  return 0;
+  volatile UINT32 *UartData = (volatile UINT32 *)(UINTN)0x11002000;
+  volatile UINT32 *UartStatus = (volatile UINT32 *)(UINTN)0x11002014;
+  UINTN Read;
+
+  if (Buffer == NULL || NumberOfBytes == 0) {
+    return 0;
+  }
+
+  for (Read = 0; Read < NumberOfBytes; Read++) {
+    if ((*UartStatus & 0x01U) == 0) {
+      break;
+    }
+
+    Buffer[Read] = (UINT8)(*UartData & 0xFFU);
+  }
+
+  return Read;
 }
 
 /**
@@ -139,7 +155,9 @@ SerialPortPoll (
   VOID
   )
 {
-  return FALSE;
+  volatile UINT32 *UartStatus = (volatile UINT32 *)(UINTN)0x11002014;
+
+  return ((*UartStatus & 0x01U) != 0);
 }
 
 /**
@@ -224,6 +242,23 @@ SerialPortSetAttributes (
   IN OUT EFI_STOP_BITS_TYPE *StopBits
   )
 {
-  return RETURN_UNSUPPORTED;
+  /*
+   * The MTK boot chain normally configures UART0 as 921600 8N1. This
+   * implementation does not reprogram clocks or pinmux, so only accept that
+   * known device-tree console format instead of claiming arbitrary settings.
+   */
+  if (BaudRate == NULL || Parity == NULL || DataBits == NULL || StopBits == NULL) {
+    return RETURN_INVALID_PARAMETER;
+  }
+
+  if (*BaudRate == 0) {
+    *BaudRate = 921600;
+  }
+  if (*BaudRate != 921600 || *Parity != NoParity ||
+      *DataBits != 8 || *StopBits != OneStopBit) {
+    return RETURN_UNSUPPORTED;
+  }
+
+  return RETURN_SUCCESS;
 }
 
