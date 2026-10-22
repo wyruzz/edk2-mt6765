@@ -38,18 +38,27 @@ SerialPortInitialize (
   return RETURN_SUCCESS;
 }
 
-static void uart_putc(char c) {
-  if (c == '\n')
-  	uart_putc('\r');
-  char* uart_reg0 = (char*)0x11002000;
-  volatile UINT32* uart_reg1 = (volatile UINT32*)0x11002014;
-  /* Do not hang firmware if UART is not clocked or routed. */
-  for (UINTN timeout = 0; timeout < 1000000; timeout++) {
-    if ((*uart_reg1) & 0x20) {
-      *uart_reg0 = c;
-      return;
+static BOOLEAN uart_putc(char c) {
+  volatile UINT32 *UartData = (volatile UINT32 *)(UINTN)0x11002000;
+  volatile UINT32 *UartStatus = (volatile UINT32 *)(UINTN)0x11002014;
+
+  if (c == '\n' && !uart_putc('\r')) {
+    return FALSE;
+  }
+
+  /*
+   * The boot chain may leave the UART clock and pinmux configured, but this
+   * is not guaranteed. Bound the wait so a missing UART cannot hang PEI.
+   * MTK UART registers are 32-bit MMIO registers.
+   */
+  for (UINTN Timeout = 0; Timeout < 1000000; Timeout++) {
+    if ((*UartStatus & 0x20U) != 0) {
+      *UartData = (UINT32)(UINT8)c;
+      return TRUE;
     }
   }
+
+  return FALSE;
 }
 
 /**
@@ -76,10 +85,14 @@ SerialPortWrite (
   IN UINTN     NumberOfBytes
 )
 {
-  for (UINTN i = 0; i < NumberOfBytes; i++) {
-    uart_putc(Buffer[i]);
+  UINTN Written;
+
+  for (Written = 0; Written < NumberOfBytes; Written++) {
+    if (!uart_putc((CHAR8)Buffer[Written])) {
+      break;
+    }
   }
-  return NumberOfBytes;
+  return Written;
 }
 
 
