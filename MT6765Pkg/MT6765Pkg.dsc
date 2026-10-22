@@ -15,16 +15,8 @@
 # Defines Section - statements that will be processed to create a Makefile.
 #
 ################################################################################
-[Defines]
-  PLATFORM_NAME                  = MT6765Pkg
-  PLATFORM_GUID                  = 28f1a3bf-193a-47e3-a7b9-5a435eaab2ee
-  PLATFORM_VERSION               = 0.1
-  DSC_SPECIFICATION              = 0x00010019
-  OUTPUT_DIRECTORY               = Build/$(PLATFORM_NAME)
-  SUPPORTED_ARCHITECTURES        = AARCH64
-  BUILD_TARGETS                  = DEBUG|RELEASE
-  SKUID_IDENTIFIER               = DEFAULT
-  FLASH_DEFINITION               = MT6765Pkg/MT6765Pkg.fdf
+# Common DSC fragment: platform-specific [Defines] belong in Devices/*.dsc.
+
 
 !include MT6765Pkg/CommonDsc.dsc.inc
 
@@ -53,7 +45,6 @@
   DxeServicesLib|MdePkg/Library/DxeServicesLib/DxeServicesLib.inf
   BootLogoLib|MdeModulePkg/Library/BootLogoLib/BootLogoLib.inf
 
-  SerialPortLib|MT6765Pkg/Library/UartSerialPortLib/UartSerialPortLib.inf
   RealTimeClockLib|EmbeddedPkg/Library/VirtualRealTimeClockLib/VirtualRealTimeClockLib.inf
   TimeBaseLib|EmbeddedPkg/Library/TimeBaseLib/TimeBaseLib.inf
 
