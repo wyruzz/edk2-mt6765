@@ -49,5 +49,6 @@ jobs:
           WORKSPACE: ${{ github.workspace }}/workspace
           GCC5_AARCH64_PREFIX: aarch64-linux-gnu-
         run: |
+          mkdir -p "$WORKSPACE"
           source "${{ github.workspace }}/edk2/edksetup.sh"
           build -j"$(nproc)" -s -n 0 -a AARCH64 -t GCC5 -p MT6765Pkg/Devices/sm-a037f.dsc
