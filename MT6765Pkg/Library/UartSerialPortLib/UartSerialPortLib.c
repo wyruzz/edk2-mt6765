@@ -43,8 +43,13 @@ static void uart_putc(char c) {
   	uart_putc('\r');
   char* uart_reg0 = (char*)0x11002000;
   volatile UINT32* uart_reg1 = (volatile UINT32*)0x11002014;
-  while ( !((*uart_reg1) & 0x20) ) {}
-  *uart_reg0 = c;
+  /* Do not hang firmware if UART is not clocked or routed. */
+  for (UINTN timeout = 0; timeout < 1000000; timeout++) {
+    if ((*uart_reg1) & 0x20) {
+      *uart_reg0 = c;
+      return;
+    }
+  }
 }
 
 /**
