@@ -15,7 +15,7 @@ GCC5_AARCH64_PREFIX="$GCC5_AARCH64_PREFIX" build -j"$JOBS" -s -n 0 \
   -a AARCH64 -t GCC5 -p MT6765Pkg/Devices/sm-a037f.dsc \
   -D SM_A037F_UART_ONLY=TRUE
 
-cat BootShim/BootShim.bin workspace/Build/MT6765Pkg/DEBUG_GCC5/FV/MT6765PKG_UEFI.fd \
+cat BootShim/BootShim.bin workspace/Build/SM-A037F/DEBUG_GCC5/FV/MT6765PKG_UEFI.fd \
   > workspace/UEFI-sm-a037f.bin
 
 SIZE="$(wc -c < workspace/UEFI-sm-a037f.bin | tr -d ' ')"
