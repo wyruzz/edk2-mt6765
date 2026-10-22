@@ -66,7 +66,7 @@
 
   FrameBufferBltLib|MT6765Pkg/Library/FrameBufferBltLib/FrameBufferBltLib.inf
 
-!if $(PLATFORM_NAME) == SM-A037F
+!if $(PLATFORM_NAME) == SMA037F
   # A03s bring-up: use the UART address captured from the device tree.
   SerialPortLib|MT6765Pkg/Library/UartSerialPortLib/UartSerialPortLib.inf
 !else
@@ -201,10 +201,10 @@
   # Platform Dxes
   #
   MT6765Pkg/Drivers/MT6765PkgDxe/MT6765PkgDxe.inf
-!if $(PLATFORM_NAME) != SM-A037F
+!if $(PLATFORM_NAME) != SMA037F
   MT6765Pkg/Drivers/SimpleFbDxe/SimpleFbDxe.inf
 !endif
-!if $(PLATFORM_NAME) != SM-A037F
+!if $(PLATFORM_NAME) != SMA037F
   MT6765Pkg/Drivers/LogoDxe/LogoDxe.inf
 !endif
 
