@@ -7,7 +7,13 @@ UART works too, but for it, you must first disable FrameBufferSerialLib in MT676
 
 # Building the original donor target
 
-Clone EDK2 and edk2-platforms as above, then run `./firstrun.sh`.
+Clone the build dependencies beside this repository:
+```sh
+git clone https://github.com/tianocore/edk2 --recursive -b edk2-stable202302
+git clone https://github.com/tianocore/edk2-platforms.git
+```
+Then run `./firstrun.sh`.
+
 The original Nokia/roo image builder is preserved as `bash ./build-roo.sh`.
 That image uses the donor DTB/initramfs and is **not for the Samsung SM-A037F**.
 
